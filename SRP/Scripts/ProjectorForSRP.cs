@@ -969,12 +969,14 @@ namespace ProjectorForSRP
 
 		static bool IsStereoEnabled(Camera camera)
 		{
+#if ENABLE_VR && ENABLE_XR_MODULE
 			bool isGameCamera = (camera.cameraType == CameraType.Game || camera.cameraType == CameraType.VR);
 			bool isCompatWithXRDimension = true;
-#if ENABLE_VR && ENABLE_VR_MODULE
-            isCompatWithXRDimension &= (camera.targetTexture ? camera.targetTexture.dimension == UnityEngine.XR.XRSettings.deviceEyeTextureDimension : true);
+			isCompatWithXRDimension &= (camera.targetTexture ? camera.targetTexture.dimension == UnityEngine.XR.XRSettings.deviceEyeTextureDimension : true);
+			return UnityEngine.XR.XRSettings.enabled && isGameCamera && (camera.stereoTargetEye == StereoTargetEyeMask.Both) && isCompatWithXRDimension;
+#else
+			return false;
 #endif
-			return XRGraphics.enabled && isGameCamera && (camera.stereoTargetEye == StereoTargetEyeMask.Both) && isCompatWithXRDimension;
 		}
 
 		private void UpdateProjectionMatrix()
